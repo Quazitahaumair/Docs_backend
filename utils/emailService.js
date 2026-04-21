@@ -11,44 +11,10 @@ class EmailService {
     const apiKey = process.env.SENDGRID_API_KEY;
     logger.info(`Email config - Enabled: ${this.isEnabled}, From: ${this.fromEmail}, API Key: ${apiKey ? apiKey.substring(0, 10) + '...' : 'MISSING'}`);
     if (!apiKey) {
-      logger.error('❌ SENDGRID_API_KEY not found');
-      throw new Error('SENDGRID_API_KEY must be set in environment variables.');
+      logger.warn('⚠️ SENDGRID_API_KEY not found - emails disabled');
+      this.isEnabled = false;
+      return;
     }
-    // Use SendGrid SMTP
-    this.transporter = nodemailer.createTransport({
-      host: 'smtp.sendgrid.net',
-      port: 587,
-      secure: false,
-      auth: {
-        user: 'apikey',
-        pass: apiKey
-      },
-      tls: {
-        rejectUnauthorized: false
-      }
-    });
-  }
-  // ...existing code...
-}
-
-module.exports = new EmailService();
-const nodemailer = require('nodemailer');
-const logger = require('./logger');
-
-/**
- * Email Service - SendGrid via Nodemailer
- */
-class EmailService {
-  constructor() {
-    this.isEnabled = true; // FORCE ENABLED FOR TESTING
-    this.fromEmail = process.env.EMAIL_FROM || 'quazitahaumair92@gmail.com';
-    const apiKey = process.env.SENDGRID_API_KEY;
-    logger.info(`Email config - Enabled: ${this.isEnabled}, From: ${this.fromEmail}, API Key: ${apiKey ? apiKey.substring(0, 10) + '...' : 'MISSING'}`);
-    if (!apiKey) {
-      logger.error('❌ SENDGRID_API_KEY not found');
-      throw new Error('SENDGRID_API_KEY must be set in environment variables.');
-    }
-    
     // Use SendGrid SMTP
     this.transporter = nodemailer.createTransport({
       host: 'smtp.sendgrid.net',
